@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  server:
+    build:
+      context: ./web/
+    container_name: junco_frontend_https
+    image: junco_vue:latest
+    ports:
+      - "443:8080"
+  web:
+    build:
+      context: ./server/
+    container_name: junco_backend_https
+    image: junco_flask:latest
+    ports:
+      - "5000:5000"

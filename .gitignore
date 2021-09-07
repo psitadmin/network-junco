@@ -1,0 +1,45 @@
+.DS_Store
+node_modules
+/web/dist
+
+
+# cache files
+__pycache__
+
+
+# local env files
+.env.local
+.env.*.local
+.env.development
+.env.prod
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing .txt files
+/server/PRUEBAS/*.txt
+
+# Files that might contains sensible data
+/web/src/utils/axiosinstance.js
+/web/src/api/mock_login.js
+/server/properties/properties.py
+
+# Management logs and txt
+/server/management/*.txt
+/server/management/*.log
+
+# Certificates
+/server/*.pem
+/web/*.pem

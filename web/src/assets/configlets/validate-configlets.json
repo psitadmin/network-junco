@@ -1,0 +1,17 @@
+{
+  "validate-cli-configlet" : {
+    "device" : {
+      "@href" : "/api/space/device-management/devices/{id}"
+    } ,
+    "context" : "/device" ,
+    "cli-configlet-params" : {
+      "cli-configlet-param" : {
+        "parameter" : {
+          "@href" :
+          "/api/space/configuration-management/cli-configlets/{configletId}/cli-configlet-params/{paramId}"
+        } ,
+        "parameter-value" : "String"
+      }
+    }
+  }
+}
