@@ -139,8 +139,8 @@ export default {
   },
   arpTables: {
     messageARP: 'Tablas ARP',
-    arpSearch: 'Por favor, introduzca una IP o dirección MAC para obtener la dirección MAC',
-    arpInput: 'IP, máquina o MAC',
+    arpSearch: 'Por favor, introduzca una IP o dirección MAC',
+    arpInput: 'IP o MAC',
     arpNotFound: 'No se ha encontrado una dirección con estos parámetros.',
     arpEmpty1: 'Se ha encontrado un registro ARP',
     arpEmpty2: ' pero no se ha encontrado un resultado final',
