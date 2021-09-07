@@ -142,8 +142,8 @@ export default{
   },
   arpTables: {
     messageARP: 'ARP tables',
-    arpSearch: 'Please, input an IP or MAC in order to get MAC address',
-    arpInput: 'IP, MAC or device',
+    arpSearch: 'Please, input an IP or MAC',
+    arpInput: 'IP or MAC address',
     arpNotFound: 'Can\'t found IP or MAC address with this params. Please, try again.',
     arpInvalid: 'Invalid IP or MAC address format.',
     arpEmpty1: 'ARP register found',
