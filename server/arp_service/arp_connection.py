@@ -65,7 +65,6 @@ class JuniperARP():
                         result_array.append(serie)
                 df = pd.DataFrame(result_array)
                 df.columns = ['mac_address', "vlan_name", "logical_interface"]
-                print(df.to_string())
                 dev.close()
                 return df
 
@@ -169,8 +168,8 @@ class CiscoARP():
                     if (len(serie) == 4):
                         new_serie = [ format_mac_address(serie[2]), serie[1], serie[0] ]
                         result_array.append(new_serie)
-                    else:
-                        print("FALLO", line)
+                    # else:
+                    #     print("FALLO", line)
             # ROUTER AND SWITCH CASE
             else:
                 # Parsing text to make a dataframe
@@ -207,10 +206,10 @@ class CiscoARP():
                             elif(validate_mac( format_mac_address(serie[1]) )):
                                 new_serie = [ format_mac_address(serie[1]), serie[0], serie[2] ]
                                 result_array.append(new_serie)
-                            else:
-                                print( "ERROR EN LA MAC ", serie[1])
-                    else:
-                        print("SERIE QUE ROMPE => ", serie)
+                    #         else:
+                    #             print( "ERROR EN LA MAC ", serie[1])
+                    # else:
+                    #     print("SERIE QUE ROMPE => ", serie)
                         
             df = pd.DataFrame(result_array)
             df.columns = ['mac_address',"ip_address","interface_name"]
@@ -224,7 +223,7 @@ class CiscoARP():
         protocol = get_device_protocol(device_ip)
 
         device_type = "cisco_ios" if (protocol == "ssh") else "cisco_ios_telnet"
-        print(device_type, device_ip)
+        # print(device_type, device_ip)
         Device = {
             "host": device_ip,
             "username": DataBaseProps.TEST_USER,
@@ -251,15 +250,15 @@ class CiscoARP():
                     new_serie = [ format_mac_address(serie[1]), serie[0], serie[3]]
                     if(validate_mac( format_mac_address(serie[1]) )):
                         result_array.append(new_serie)
-                    else:
-                        print( "ERROR EN LA MAC ", serie[1])
+                    # else:
+                    #     print( "ERROR EN LA MAC ", serie[1])
                 elif (len(serie) == 5):
                     # print( ( serie ) )
                     new_serie = [ format_mac_address(serie[1]), serie[0], serie[4]]
                     if(validate_mac( format_mac_address(serie[1]) )):
                         result_array.append(new_serie)
-                    else:
-                        print( "ERROR EN LA MAC ", serie[1])
+                    # else:
+                    #     print( "ERROR EN LA MAC ", serie[1])
                 elif (len(serie) == 6):
                     # print( ( serie ) )
                     # Special case with formatted mac address
@@ -268,8 +267,8 @@ class CiscoARP():
                     else:
                         new_serie = [ format_mac_address(serie[2]), serie[1], serie[5]]
                     result_array.append(new_serie)
-                else:
-                    print("SERIE QUE ROMPE => ", serie)
+                # else:
+                #     print("SERIE QUE ROMPE => ", serie)
 
             df = pd.DataFrame(result_array)
             df.columns = ['mac_address', "vlan_name", "logical_interface"]

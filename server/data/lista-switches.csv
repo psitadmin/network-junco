@@ -10,7 +10,7 @@ boe1-lea-anly-01;10.95.80.187;Cisco;telnet;switch
 boe1-lea-swc1;10.95.80.174;Cisco;telnet;switch
 boe1-lea-swj1;10.95.80.183;Juniper;ssh;switch
 boe1-leb-gbic-01;10.95.80.188;Cisco;telnet;switch
-boe1-leb-oob1;10.96.80.186;Cisco;ssh;switch
+boe1-leb-oob1;10.95.80.186;Cisco;ssh;switch
 boe1-leb-swc1;10.95.80.175;Cisco;telnet;switch
 boe1-leb-swj1;10.95.80.184;Juniper;ssh;switch
 boe1-lec-swc1;10.95.80.180;Cisco;telnet;switch

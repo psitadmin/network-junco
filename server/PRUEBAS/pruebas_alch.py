@@ -30,10 +30,12 @@ from cryptography.fernet import Fernet
 
 import json
 
-import datetime
+from datetime import datetime
+import logging
 import sys
 
 
 if __name__ == "__main__":
-    clave = Fernet.generate_key()
-    print(clave)
+    
+    logging.basicConfig(filename=datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
+    logging.info(datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'))

@@ -35,8 +35,8 @@ def main(argv):
             PopulateDB.populate_enum_tables()
             PopulateDB.populate_devices()
             PopulateDB.populate_arp_tables()
-            PopulateDB.populate_interfaces()
             PopulateDB.populate_ethernet_switching()
+            PopulateDB.populate_interfaces()
             PopulateDB.populate_neighbors()
         elif(argv[1] == 'populate_tables'):
             print("populating arp tables")

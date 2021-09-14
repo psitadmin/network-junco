@@ -1,3 +1,4 @@
+from os import name, remove
 from devices.devices_connection import CiscoDevice, JuniperDevice
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, PrimaryKeyConstraint, text, or_
 from sqlalchemy.ext.declarative import declarative_base
@@ -73,7 +74,7 @@ class PopulateDB():
         old_stdout = sys.stdout
         # Creating files
         log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_db_devices.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_devices_%Y_%m_%d_%H_%M.log'), encoding='utf-8', level=logging.INFO)
+        logging.basicConfig(filename=datetime.now().strftime('log_devices_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
         # Swapping standard output
         sys.stdout = log_file
         df = get_devices_csv()
@@ -88,19 +89,23 @@ class PopulateDB():
                     exist = session.query(Devices).filter(or_(Devices.ip == row['ip'], Devices.name == row['name'])).first()
                     # Adding items to query
                     if(exist is not None):
+                        final_name = removesuffix(row['name'].strip(), 'hi.inet')
                         # If name or ip exist -> updating device object with new params
                         exist.ip =  row['ip'].strip()
-                        exist.name = row['name'].removesuffix('.hi.inet').upper().strip()
+                        exist.name = final_name.upper()
                         exist.vendor = VendorEnum[ row['vendor'].lower().strip() ].value
                         exist.device_type = DeviceTypeEnum[ row['device_type'].lower().strip() ].value
                         exist.connection_type = DeviceConnectionEnum[ row['connection'].lower().strip() ].value
-                        if (row['vendor'].lower() == "juniper"):
-                            exist.serial_number = JuniperDevice.get_serial_number(row['ip'].strip())
-                            exist.device_model = JuniperDevice.get_device_model(row['ip'].strip())
-                        elif (row['vendor'].lower() == "cisco"):
-                            exist.serial_number = CiscoDevice.get_serial_number(row['ip'].strip())
-                            exist.device_model = CiscoDevice.get_device_model(row['ip'].strip())
-                        exist.location = resolve_location(row['name'].removesuffix('.hi.inet')).strip()
+                        try:
+                            if (row['vendor'].lower() == "juniper"):
+                                exist.serial_number = JuniperDevice.get_serial_number(row['ip'].strip())
+                                exist.device_model = JuniperDevice.get_device_model(row['ip'].strip())
+                            elif (row['vendor'].lower() == "cisco"):
+                                exist.serial_number = CiscoDevice.get_serial_number(row['ip'].strip())
+                                exist.device_model = CiscoDevice.get_device_model(row['ip'].strip())
+                        except Exception as e:
+                            print("({0} ({1}) - {2} ===> Exception {3} al obtener numero de serie y modelo)\n".format( exist.name, row['vendor'].lower().strip(), exist.ip, e))
+                        exist.location = resolve_location(final_name)
                         exist.date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
                         print("{0} Existe: {1}\n".format(exist.id, exist))
@@ -108,15 +113,16 @@ class PopulateDB():
 
                     else:
                         # Adding new device to DB
+                        final_name = removesuffix(row['name'].strip(), 'hi.inet')
                         dev = Devices(
                             ip = row['ip'].strip(),
-                            name = row['name'].removesuffix('.hi.inet').upper().strip(),
+                            name = final_name.upper(),
                             vendor = VendorEnum[ row['vendor'].lower().strip() ].value,
                             serial_number = '',
                             device_model = '',
                             connection_type = DeviceConnectionEnum[ row['connection'].lower().strip() ].value,
                             device_type = DeviceTypeEnum[ row['device_type'].lower().strip() ].value,
-                            location = resolve_location(row['name'].removesuffix('.hi.inet')).strip(),
+                            location = resolve_location(final_name),
                             date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         )
                         session.merge(dev)
@@ -146,7 +152,7 @@ class PopulateDB():
         old_stdout = sys.stdout
         # Creating files
         log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_arp.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_arp_%Y_%m_%d_%H_%M.log'), encoding='utf-8', level=logging.INFO)
+        logging.basicConfig(filename=datetime.now().strftime('log_arp_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
         # Swapping standard output
         sys.stdout = log_file
 
@@ -176,7 +182,7 @@ class PopulateDB():
                     if(arp_table is not None):
                         save_arp_table(d.ip, arp_table)
                     print(arp_table, "\n============================ >\n\n")
-                    # logging.info(arp_table, "\n============================ >\n\n")
+                    logging.info("\n============================ >\n\n")
 
                 # print( devices.all() )
             except ConnectionError as e:
@@ -196,7 +202,7 @@ class PopulateDB():
         old_stdout = sys.stdout
         # Creating files
         log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_est.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'), encoding='utf-8', level=logging.INFO)
+        logging.basicConfig(filename=datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
         # Swapping standard output
         sys.stdout = log_file
 
@@ -226,6 +232,7 @@ class PopulateDB():
                     if(ethernet_switching_table is not None):
                         save_ethernet_switching_table(d.ip, ethernet_switching_table)
                     print(ethernet_switching_table, "\n============================ >\n\n")
+                    logging.info("\n============================ >\n\n")
             except ConnectionError as e:
                 logging.error("Cannot connect to device: {0}\n".format(e))
                 # sys.exit(1)
@@ -244,7 +251,7 @@ class PopulateDB():
         old_stdout = sys.stdout
         # Creating files
         log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_int.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_int_%Y_%m_%d_%H_%M.log'), encoding='utf-8', level=logging.INFO)
+        logging.basicConfig(filename=datetime.now().strftime('log_int_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
         # Swapping standard output
         sys.stdout = log_file
 
@@ -266,11 +273,13 @@ class PopulateDB():
                     elif(d.vendor.name == 'arista'):
                         interfaces_table = AristaARP.get_interfaces_table(d.ip)
                     else:
+                        print("\nUNKNOW DEVICE VENDOR\n")
                         logging.info("\nUNKNOW DEVICE VENDOR\n")
 
                     if(interfaces_table is not None):
                         save_interfaces_table(d.ip, interfaces_table)
                     print(interfaces_table, "\n============================ >\n\n")
+                    logging.info("\n============================ >\n\n")
             except ConnectionError as e:
                 logging.error("Cannot connect to device: {0}\n".format(e))
                 # sys.exit(1)
@@ -289,7 +298,7 @@ class PopulateDB():
         old_stdout = sys.stdout
         # Creating files
         log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_nei.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_nei_%Y_%m_%d_%H_%M.log'), encoding='utf-8', level=logging.INFO)
+        logging.basicConfig(filename=datetime.now().strftime('log_nei_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
         # Swapping standard output
         sys.stdout = log_file
 
@@ -311,11 +320,13 @@ class PopulateDB():
                     elif(d.vendor.name == 'arista'):
                         neighbors_table = AristaARP.get_neighbors_table(d.ip)
                     else:
+                        print("\nUNKNOW DEVICE VENDOR\n")
                         logging.info("\nUNKNOW DEVICE VENDOR\n")
 
                     if(neighbors_table is not None):
                         save_neighbors_table(d.ip, neighbors_table)
                     print(neighbors_table, "\n============================ >\n\n")
+                    logging.info("\n============================ >\n\n")
             except ConnectionError as e:
                 logging.error("Cannot connect to device: {0}\n".format(e))
                 # sys.exit(1)

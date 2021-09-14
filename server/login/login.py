@@ -9,10 +9,10 @@ def request_auth(user, password):
 
   # Connection with Clearpass Server via Tacacs+
   cli = TACACSClient(LoginProps.CLEARPASS_IP, 49, LoginProps.CLEARPASS_SECRET, timeout=10, family=socket.AF_INET)
-
+  print("cli = ", cli)
   # authenticate user and password
   authen = cli.authenticate(user, password)
-
+  print("authen = ", authen)
   # Handle the response code
   if (authen.valid):
     return 200

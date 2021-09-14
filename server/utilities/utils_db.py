@@ -38,6 +38,13 @@ def get_device_object(device):
     )
     return result
 
+def removesuffix(self: str, suffix: str, /) -> str:
+    # suffix='' should not call self[:-0].
+    if suffix and self.endswith(suffix):
+        return self[:-len(suffix)]
+    else:
+        return self[:]
+
 def resolve_location(name):
     ''' Resolve name location from name characters '''
     name_upper = name.upper()
