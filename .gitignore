@@ -39,6 +39,7 @@ pnpm-debug.log*
 # Management logs and txt
 /server/management/*.txt
 /server/management/*.log
+/server/management/logs/*
 
 # Certificates
 /server/*.pem

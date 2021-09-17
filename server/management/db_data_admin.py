@@ -1,4 +1,3 @@
-from os import name, remove
 from devices.devices_connection import CiscoDevice, JuniperDevice
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, PrimaryKeyConstraint, text, or_
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,6 +20,10 @@ from devices.devices_db import edit_device
 
 from datetime import datetime
 import sys
+import os
+
+PATH = 'logs/'
+DIR = os.path.dirname(__file__)
 
 class OperatingDB():
     ''' Utiliy class from general operations on DB tables '''
@@ -71,20 +74,21 @@ class PopulateDB():
     def populate_devices():
         ''' Update database devices table from .csv file '''
         # Saving deafult output
-        old_stdout = sys.stdout
-        # Creating files
-        log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_db_devices.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_devices_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
-        # Swapping standard output
-        sys.stdout = log_file
+        # Creating/writing log file
+        logging.basicConfig(filename=os.path.join(DIR, PATH)+'device_log.log', filemode='a', level=logging.INFO, force=True)
+        
         df = get_devices_csv()
-        # print(df.columns)
+
+        logging.info("<===============================================================")
+        logging.info("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("===============================================================>\n\n")
 
         with Session() as session:
         # Creating session
             # Iterating dataframe rows to retrieve device params
             for index, row in df.iterrows():
                 try:
+                    logging.info("==== ({0}) Dispositivo {1} - {2} ({3}) ====\n".format(index+1, row['name'], row['ip'], row['vendor']))
                     # Check if IP/NAME exist in database
                     exist = session.query(Devices).filter(or_(Devices.ip == row['ip'], Devices.name == row['name'])).first()
                     # Adding items to query
@@ -104,11 +108,10 @@ class PopulateDB():
                                 exist.serial_number = CiscoDevice.get_serial_number(row['ip'].strip())
                                 exist.device_model = CiscoDevice.get_device_model(row['ip'].strip())
                         except Exception as e:
-                            print("({0} ({1}) - {2} ===> Exception {3} al obtener numero de serie y modelo)\n".format( exist.name, row['vendor'].lower().strip(), exist.ip, e))
+                            logging.error("({0} ({1}) - {2} ===> Exception {3} al obtener numero de serie y modelo)\n".format( exist.name, row['vendor'].lower().strip(), exist.ip, e))
                         exist.location = resolve_location(final_name)
                         exist.date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-                        print("{0} Existe: {1}\n".format(exist.id, exist))
+                        logging.info("{0} Existe: {1}\n".format(exist.id, exist))
                         session.merge(exist)
 
                     else:
@@ -134,7 +137,7 @@ class PopulateDB():
                         elif (row['vendor'].lower() == "cisco"):
                             new_dev.serial_number = CiscoDevice.get_serial_number(row['ip'].strip())
                             new_dev.device_model = CiscoDevice.get_device_model(row['ip'].strip())
-                        print("{0} Añadiendo nuevo: {1}\n".format(index+1, dev))
+                        logging.info("{0} Añadiendo nuevo: {1}\n".format(index+1, dev))
 
                     # UPDATE on database
                     session.commit()
@@ -143,18 +146,26 @@ class PopulateDB():
                     print (e)
 
             session.close()
-
-        sys.stdout = old_stdout
-        log_file.close()
+        
+        logging.info("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("================================================================\n\n")
 
     def populate_arp_tables():
         # Saving deafult output
         old_stdout = sys.stdout
         # Creating files
-        log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_arp.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_arp_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
+        log_file = open(os.path.join(DIR, PATH)+'arp_table.log', "a")
+        logging.basicConfig(filename=os.path.join(DIR, PATH)+'arp_log.log', filemode='a', level=logging.INFO, force=True)
         # Swapping standard output
         sys.stdout = log_file
+
+        logging.info("<===============================================================")
+        logging.info("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("===============================================================>\n\n")
+
+        print("<===============================================================")
+        print("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("===============================================================>\n\n")
 
         with Session() as session:
             try:
@@ -183,8 +194,6 @@ class PopulateDB():
                         save_arp_table(d.ip, arp_table)
                     print(arp_table, "\n============================ >\n\n")
                     logging.info("\n============================ >\n\n")
-
-                # print( devices.all() )
             except ConnectionError as e:
                 logging.error("Cannot connect to device: {0}\n".format(e))
                 # sys.exit(1)
@@ -192,6 +201,11 @@ class PopulateDB():
                 logging.error("\nException raised: {0}\n".format(ex) )
                 # sys.exit(1)
             session.close()
+        
+        logging.info("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("==============================================================\n\n=")
+        print("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("==============================================================\n\n=")
 
         sys.stdout = old_stdout
         log_file.close()
@@ -201,10 +215,18 @@ class PopulateDB():
         # Saving deafult output
         old_stdout = sys.stdout
         # Creating files
-        log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_est.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
+        log_file = open(os.path.join(DIR, PATH)+'est_table.log', "a")
+        logging.basicConfig(filename=os.path.join(DIR, PATH)+'est_log.log', filemode='a', level=logging.INFO, force=True)
         # Swapping standard output
         sys.stdout = log_file
+
+        logging.info("<===============================================================")
+        logging.info("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("===============================================================>\n\n")
+        
+        print("<===============================================================")
+        print("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("===============================================================>\n\n")
 
         with Session() as session:
             try:
@@ -242,6 +264,11 @@ class PopulateDB():
 
             session.close()
         
+        logging.info("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("==============================================================\n\n=")
+        print("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("==============================================================\n\n=")
+
         sys.stdout = old_stdout
         log_file.close()
 
@@ -250,10 +277,18 @@ class PopulateDB():
         # Saving deafult output
         old_stdout = sys.stdout
         # Creating files
-        log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_int.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_int_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
+        log_file = open(os.path.join(DIR, PATH)+'int_table.log', "a")
+        logging.basicConfig(filename=os.path.join(DIR, PATH)+'int_log.log', filemode='a', level=logging.INFO, force=True)
         # Swapping standard output
         sys.stdout = log_file
+
+        logging.info("<===============================================================")
+        logging.info("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("===============================================================>\n\n")
+        
+        print("<===============================================================")
+        print("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("===============================================================>\n\n")
 
         with Session() as session:
             try:
@@ -289,6 +324,11 @@ class PopulateDB():
 
             session.close()
 
+        logging.info("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("==============================================================\n\n=")
+        print("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("==============================================================\n\n=")
+
         sys.stdout = old_stdout
         log_file.close()
 
@@ -297,10 +337,18 @@ class PopulateDB():
         # Saving deafult output
         old_stdout = sys.stdout
         # Creating files
-        log_file = open(datetime.now().strftime('%Y_%m_%d_%H_%M_log_db_nei.log'), "w")
-        logging.basicConfig(filename=datetime.now().strftime('log_nei_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
+        log_file = open(os.path.join(DIR, PATH)+'nei_table.log', "a")
+        logging.basicConfig(filename=os.path.join(DIR, PATH)+'nei_log.log', filemode='a', level=logging.INFO, force=True)
         # Swapping standard output
         sys.stdout = log_file
+        
+        logging.info("<===============================================================")
+        logging.info("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("===============================================================>\n\n")
+        
+        print("<===============================================================")
+        print("========== SCRIPT EXECUTED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("===============================================================>\n\n")
 
         with Session() as session:
             try:
@@ -335,6 +383,11 @@ class PopulateDB():
                 # sys.exit(1)
 
             session.close()
-    
+        
+        logging.info("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        logging.info("==============================================================\n\n=")
+        print("========== SCRIPT FINISHED: {0} ===============".format(datetime.now().strftime('%Y_%m_%d_%H_%M')))
+        print("==============================================================\n\n=")
+
         sys.stdout = old_stdout
         log_file.close()

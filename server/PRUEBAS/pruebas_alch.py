@@ -25,7 +25,7 @@ from netmiko.dell import dell_powerconnect
 import paramiko
 import dracclient.client
 from cryptography.fernet import Fernet
-
+from os import path
 # import socket
 
 import json
@@ -36,6 +36,17 @@ import sys
 
 
 if __name__ == "__main__":
-    
-    logging.basicConfig(filename=datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'), level=logging.INFO)
-    logging.info(datetime.now().strftime('log_est_%Y_%m_%d_%H_%M.log'))
+    PATH = 'logs/'
+    DIR = os.path.dirname(__file__)
+    logging.basicConfig(filename=os.path.join(DIR, PATH)+'p1', filemode='a', level=logging.INFO, force=True)
+    logging.info("hola 1")
+    logging.basicConfig(filename=os.path.join(DIR, PATH)+'p2', filemode='a', level=logging.INFO, force=True)
+    logging.info("hola 2")
+    logging.basicConfig(filename=os.path.join(DIR, PATH)+'p3', filemode='a', level=logging.INFO, force=True)
+    logging.info("hola 3")
+    # log_1 = logging.getLogger('logger_1')
+    # log_2 = logging.getLogger('logger_2')
+    # log_3 = logging.getLogger('logger_3')
+    # log_2.info("hola 2")
+    # log_3.info("hola 3")
+

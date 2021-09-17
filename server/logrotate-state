@@ -1,0 +1,21 @@
+logrotate state -- version 2
+"/home/comunica/DEV/junco/server/management/logs/device_log_.log2021-09-17.2021-09-17.log" 2021-9-17-14:32:3
+"/home/comunica/DEV/junco/server/management/logs/int_table.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/device_log.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/device_log.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/est_table.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/arp_log.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/nei_log.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/device_log_cambio.2021-09-17.log" 2021-9-17-14:32:3
+"/home/comunica/DEV/junco/server/management/logs/arp_table.log" 2021-9-17-14:0:0
+"/home/comunica/DEV/junco/server/management/logs/int_log.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/device_log_cambio.log" 2021-9-17-14:35:13
+"/home/comunica/DEV/junco/server/management/logs/est_log.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/arp_log.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/int_log.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/nei_table.log" 2021-9-17-14:59:9
+"/home/comunica/DEV/junco/server/management/logs/nei_log.2021-09-17.log" 2021-9-17-14:52:1
+"/home/comunica/DEV/junco/server/management/logs/int_table.log" 2021-9-17-14:57:20
+"/home/comunica/DEV/junco/server/management/logs/est_table.log" 2021-9-17-14:56:50
+"/home/comunica/DEV/junco/server/management/logs/device_log_.log2021-09-17.log" 2021-9-17-14:35:13
+"/home/comunica/DEV/junco/server/management/logs/est_log.2021-09-17.log" 2021-9-17-14:52:1

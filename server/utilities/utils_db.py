@@ -5,14 +5,17 @@ from properties.properties import DataBaseProps
 from model.model_db import *
 from datetime import datetime
 import pandas as pd
+import logging
 import json
 import re
+import os
 
 REGEX_MAC_ADDRESS = re.compile(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$', re.I)
 REGEX_INTERFACE = re.compile(r'(^(gi|te|ge|et|xe|efgx))-?[0-9]+(\/[0-9]{1,2}){1,2}(\.[0-9])?', re.I)
 REGEX_GIGABIT_INTERFACE = re.compile(r'(gigabitethernet[0-9]\/[0-9]{1,2})',re.I)
 REGEX_IP_ADDRESS = re.compile(r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
 
+CSV_PATH = os.path.join(os.path.dirname(__file__), "../data/lista-switches.csv")
 
 def check_interface(interface):
     result = False
@@ -79,7 +82,7 @@ def resolve_vendor(vendor):
 def get_devices_csv():
     ''' Returns dataframe that contains devicelist from csv '''
     try:
-        df = pd.read_csv('../data/lista-switches.csv', sep=";")
+        df = pd.read_csv(CSV_PATH, sep=";")
         return df
     except FileNotFoundError:
         return FileNotFoundError
@@ -104,6 +107,19 @@ def validate_mac(mac):
 def validate_ip(ip):
     ''' True if valid ip address. False if not '''
     return bool(REGEX_IP_ADDRESS.match(str(ip)))
+
+def setup_logger(logger_name, log_file, level=logging.INFO):
+    l = logging.getLogger(logger_name)
+    formatter = logging.Formatter('%(message)s')
+    fileHandler = logging.FileHandler(log_file, mode='w')
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+
+    l.setLevel(level)
+    l.addHandler(fileHandler)
+    l.addHandler(streamHandler)    
+
 
 class TableJSONEncoder(json.JSONEncoder):
     ''' Class to encode Juniper Views and table to return JSON object '''
